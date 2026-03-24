@@ -1,0 +1,9 @@
+{
+  "name": "Reading Timer",
+  "short_name": "Reading Timer",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#dbc5ff",
+  "theme_color": "#dbc5ff",
+  "lang": "sv"
+}
