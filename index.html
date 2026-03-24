@@ -2,20 +2,293 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Reading Timer</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f5ecff 0%, #eadbff 45%, #dbc5ff 100%);
+      color: #4d3566;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .sparkles {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      box-shadow:
+        0 0 8px rgba(255,255,255,0.85),
+        0 0 16px rgba(255,255,255,0.45);
+      animation: floatUp linear infinite, twinkle ease-in-out infinite;
+      opacity: 0.7;
+    }
+
+    .sparkle::before,
+    .sparkle::after {
+      content: "";
+      position: absolute;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 999px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .sparkle::before {
+      width: 2px;
+      height: 16px;
+    }
+
+    .sparkle::after {
+      width: 16px;
+      height: 2px;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(20px);
+      }
+      100% {
+        transform: translateY(-40px);
+      }
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: 0.25;
+        transform: scale(0.8);
+      }
+      50% {
+        opacity: 0.95;
+        transform: scale(1.15);
+      }
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .setup-card {
+      width: min(700px, 100%);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 36px;
+      padding: 32px 24px;
+      box-shadow: 0 20px 60px rgba(103, 62, 145, 0.18);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      color: #2f1f43;
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      font-size: 1rem;
+      font-weight: 500;
+      opacity: 0.82;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .time-btn,
+    .action-btn,
+    .small-btn {
+      border: none;
+      border-radius: 22px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .time-btn:hover,
+    .action-btn:hover,
+    .small-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .time-btn {
+      padding: 18px 16px;
+      background: rgba(255, 255, 255, 0.96);
+      color: #5f3d86;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(121, 88, 168, 0.12);
+    }
+
+    .time-btn.selected {
+      background: linear-gradient(135deg, #cda8ff, #b884ff);
+      color: white;
+      box-shadow: 0 14px 30px rgba(133, 77, 212, 0.28);
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 18px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8e5de8, #b67cff);
+      color: white;
+      box-shadow: 0 16px 30px rgba(133, 77, 212, 0.25);
+    }
+
+    .hint {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      opacity: 0.75;
+    }
+
+    .timer-screen {
+      flex-direction: column;
+      position: relative;
+      text-align: center;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.45), transparent 35%),
+        linear-gradient(180deg, #f1e5ff 0%, #d9c0ff 55%, #caa6ff 100%);
+    }
+
+    .top-info {
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.94);
+      background: rgba(255,255,255,0.16);
+      padding: 10px 16px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .timer-display {
+      font-size: clamp(6rem, 22vw, 14rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      text-shadow:
+        0 10px 30px rgba(84, 39, 138, 0.25),
+        0 0 18px rgba(255, 255, 255, 0.18);
+    }
+
+    .reading-label {
+      margin-top: 18px;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-weight: 600;
+      color: rgba(255,255,255,0.95);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .small-btn {
+      padding: 14px 18px;
+      min-width: 110px;
+      background: rgba(255,255,255,0.18);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .small-btn.primary {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .finished {
+      animation: pulse 1.1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 600px) {
+      .setup-card {
+        padding: 26px 18px;
+        border-radius: 28px;
+      }
+
+      .buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .small-btn {
+        min-width: 92px;
+        padding: 12px 14px;
+      }
+
+      .timer-display {
+        font-size: clamp(5.5rem, 24vw, 10rem);
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="sparkles" id="sparkles"></div>
@@ -26,14 +299,14 @@
       <p class="subtitle">Välj hur länge du vill läsa</p>
 
       <div class="buttons">
-        <button class="time-btn" data-minutes="15" type="button">15 min</button>
-        <button class="time-btn" data-minutes="20" type="button">20 min</button>
-        <button class="time-btn" data-minutes="30" type="button">30 min</button>
-        <button class="time-btn" data-minutes="45" type="button">45 min</button>
-        <button class="time-btn" data-minutes="60" type="button">60 min</button>
+        <button class="time-btn" data-minutes="15">15 min</button>
+        <button class="time-btn" data-minutes="20">20 min</button>
+        <button class="time-btn" data-minutes="30">30 min</button>
+        <button class="time-btn" data-minutes="45">45 min</button>
+        <button class="time-btn" data-minutes="60">60 min</button>
       </div>
 
-      <button id="startBtn" class="action-btn" type="button">Starta timer</button>
+      <button id="startBtn" class="action-btn">Starta timer</button>
       <p class="hint">När timern startar visas bara klockan ✨</p>
     </div>
   </section>
@@ -45,11 +318,182 @@
     <div id="readingLabel" class="reading-label">Nu läser vi 📖</div>
 
     <div class="controls">
-      <button id="pauseBtn" class="small-btn primary" type="button">Pausa</button>
-      <button id="resetBtn" class="small-btn" type="button">Avsluta</button>
+      <button id="pauseBtn" class="small-btn primary">Pausa</button>
+      <button id="resetBtn" class="small-btn">Avsluta</button>
     </div>
   </section>
 
-  <script src="script.js"></script>
+  <script>
+    const timeButtons = document.querySelectorAll(".time-btn");
+    const startBtn = document.getElementById("startBtn");
+    const setupScreen = document.getElementById("setupScreen");
+    const timerScreen = document.getElementById("timerScreen");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const readingLabel = document.getElementById("readingLabel");
+    const sessionLabel = document.getElementById("sessionLabel");
+    const sparklesContainer = document.getElementById("sparkles");
+
+    let selectedMinutes = 20;
+    let totalSeconds = selectedMinutes * 60;
+    let remainingSeconds = totalSeconds;
+    let timerInterval = null;
+    let isPaused = false;
+    let wakeLock = null;
+
+    function createSparkles() {
+      for (let i = 0; i < 22; i++) {
+        const sparkle = document.createElement("div");
+        sparkle.className = "sparkle";
+        sparkle.style.left = Math.random() * 100 + "%";
+        sparkle.style.top = Math.random() * 100 + "%";
+        sparkle.style.animationDuration =
+          (4 + Math.random() * 4) + "s, " + (2 + Math.random() * 3) + "s";
+        sparkle.style.animationDelay =
+          (Math.random() * 4) + "s, " + (Math.random() * 3) + "s";
+        sparkle.style.transform = `scale(${0.6 + Math.random() * 0.9})`;
+        sparklesContainer.appendChild(sparkle);
+      }
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
+
+    function updateDisplay() {
+      timerDisplay.textContent = formatTime(remainingSeconds);
+      document.title = `${formatTime(remainingSeconds)} • Reading Timer`;
+    }
+
+    function selectDefaultButton() {
+      timeButtons.forEach(btn => {
+        btn.classList.toggle("selected", Number(btn.dataset.minutes) === selectedMinutes);
+      });
+    }
+
+    timeButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        selectedMinutes = Number(button.dataset.minutes);
+        totalSeconds = selectedMinutes * 60;
+        remainingSeconds = totalSeconds;
+        selectDefaultButton();
+      });
+    });
+
+    async function requestWakeLock() {
+      try {
+        if ("wakeLock" in navigator) {
+          wakeLock = await navigator.wakeLock.request("screen");
+          wakeLock.addEventListener("release", () => {
+            console.log("Wake lock släppt.");
+          });
+        }
+      } catch (error) {
+        console.log("Wake lock kunde inte aktiveras:", error);
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (wakeLock) {
+        try {
+          await wakeLock.release();
+        } catch (error) {
+          console.log("Kunde inte släppa wake lock:", error);
+        }
+        wakeLock = null;
+      }
+    }
+
+    document.addEventListener("visibilitychange", async () => {
+      if (document.visibilityState === "visible" && timerInterval && !isPaused) {
+        await requestWakeLock();
+      }
+    });
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      isPaused = false;
+      pauseBtn.textContent = "Pausa";
+
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay();
+
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          timerDisplay.textContent = "KLAR";
+          timerDisplay.classList.add("finished");
+          readingLabel.textContent = "Din lässtund är slut ✨";
+          pauseBtn.style.display = "none";
+          releaseWakeLock();
+
+          try {
+            if (navigator.vibrate) {
+              navigator.vibrate([300, 150, 300]);
+            }
+          } catch (e) {}
+        }
+      }, 1000);
+    }
+
+    startBtn.addEventListener("click", async () => {
+      totalSeconds = selectedMinutes * 60;
+      remainingSeconds = totalSeconds;
+      sessionLabel.textContent = `${selectedMinutes} min lässtund`;
+      readingLabel.textContent = "Nu läser vi 📖";
+      timerDisplay.classList.remove("finished");
+      pauseBtn.style.display = "inline-block";
+
+      updateDisplay();
+      setupScreen.classList.remove("active");
+      timerScreen.classList.add("active");
+
+      await requestWakeLock();
+      startTimer();
+    });
+
+    pauseBtn.addEventListener("click", async () => {
+      if (!timerInterval && !isPaused) return;
+
+      if (!isPaused) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        isPaused = true;
+        pauseBtn.textContent = "Fortsätt";
+        readingLabel.textContent = "Pausad";
+        await releaseWakeLock();
+      } else {
+        isPaused = false;
+        pauseBtn.textContent = "Pausa";
+        readingLabel.textContent = "Nu läser vi 📖";
+        await requestWakeLock();
+        startTimer();
+      }
+    });
+
+    resetBtn.addEventListener("click", async () => {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      isPaused = false;
+      await releaseWakeLock();
+
+      remainingSeconds = selectedMinutes * 60;
+      updateDisplay();
+      timerDisplay.classList.remove("finished");
+      setupScreen.classList.add("active");
+      timerScreen.classList.remove("active");
+      pauseBtn.textContent = "Pausa";
+      pauseBtn.style.display = "inline-block";
+      document.title = "Reading Timer";
+    });
+
+    createSparkles();
+    selectDefaultButton();
+    updateDisplay();
+  </script>
 </body>
 </html>
