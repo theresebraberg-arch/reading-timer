@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Reading Timer</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="sparkles" id="sparkles"></div>
+
+<section id="setupScreen" class="screen active">
+  <div class="setup-card">
+    <h1>Reading Timer</h1>
+
+    <div class="buttons">
+      <button class="time-btn" data-minutes="15">15</button>
+      <button class="time-btn" data-minutes="20">20</button>
+      <button class="time-btn" data-minutes="30">30</button>
+      <button class="time-btn" data-minutes="45">45</button>
+      <button class="time-btn" data-minutes="60">60</button>
+    </div>
+
+    <button id="startBtn">Start</button>
+  </div>
+</section>
+
+<section id="timerScreen" class="screen">
+  <div id="timerDisplay" class="timer">00:00</div>
+
+  <div class="controls">
+    <button id="pauseBtn">Pause</button>
+    <button id="resetBtn">Stop</button>
+  </div>
+</section>
+
+<!-- JS -->
+<script src="script.js"></script>
+
+</body>
+</html>
