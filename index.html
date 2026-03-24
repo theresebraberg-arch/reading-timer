@@ -5,11 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Reading Timer</title>
 
+  <meta name="theme-color" content="#dbc5ff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Reading Timer" />
+
+  <link rel="manifest" href="manifest.json" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="sparkles" id="sparkles"></div>
+
+  <button id="themeToggle" class="theme-toggle" type="button" aria-label="Byt tema">
+    🌙
+  </button>
 
   <section id="setupScreen" class="screen active">
     <div class="setup-card">
@@ -17,14 +27,14 @@
       <p class="subtitle">Välj hur länge du vill läsa</p>
 
       <div class="buttons">
-        <button class="time-btn" data-minutes="15">15 min</button>
-        <button class="time-btn" data-minutes="20">20 min</button>
-        <button class="time-btn" data-minutes="30">30 min</button>
-        <button class="time-btn" data-minutes="45">45 min</button>
-        <button class="time-btn" data-minutes="60">60 min</button>
+        <button class="time-btn" data-minutes="15" type="button">15 min</button>
+        <button class="time-btn" data-minutes="20" type="button">20 min</button>
+        <button class="time-btn" data-minutes="30" type="button">30 min</button>
+        <button class="time-btn" data-minutes="45" type="button">45 min</button>
+        <button class="time-btn" data-minutes="60" type="button">60 min</button>
       </div>
 
-      <button id="startBtn" class="action-btn">Starta timer</button>
+      <button id="startBtn" class="action-btn" type="button">Starta timer</button>
       <p class="hint">När timern startar visas bara klockan ✨</p>
     </div>
   </section>
@@ -36,8 +46,8 @@
     <div id="readingLabel" class="reading-label">Nu läser vi 📖</div>
 
     <div class="controls">
-      <button id="pauseBtn" class="small-btn primary">Pausa</button>
-      <button id="resetBtn" class="small-btn">Avsluta</button>
+      <button id="pauseBtn" class="small-btn primary" type="button">Pausa</button>
+      <button id="resetBtn" class="small-btn" type="button">Avsluta</button>
     </div>
   </section>
 
