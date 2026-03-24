@@ -43,15 +43,12 @@ function updateDisplay() {
 }
 
 function selectDefaultButton() {
-  timeButtons.forEach((btn) => {
-    btn.classList.toggle(
-      "selected",
-      Number(btn.dataset.minutes) === selectedMinutes
-    );
+  timeButtons.forEach(btn => {
+    btn.classList.toggle("selected", Number(btn.dataset.minutes) === selectedMinutes);
   });
 }
 
-timeButtons.forEach((button) => {
+timeButtons.forEach(button => {
   button.addEventListener("click", () => {
     selectedMinutes = Number(button.dataset.minutes);
     totalSeconds = selectedMinutes * 60;
@@ -112,9 +109,7 @@ function startTimer() {
         if (navigator.vibrate) {
           navigator.vibrate([300, 150, 300]);
         }
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) {}
     }
   }, 1000);
 }
